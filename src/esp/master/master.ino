@@ -2,28 +2,32 @@
 #include <WiFi.h>
 #include <esp_now.h>
 
-void onDataRecv(const esp_now_recv_info_t* info, const uint8_t* incomingData, int len) 
-{
-  SteuerStationMessage data;
-  memcpy(&data, incomingData, sizeof(data));
-  
+typedef struct struct_message {
+    int button_press;
+} struct_message;
+
+struct_message myData;
+
+void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
+  memcpy(&myData, incomingData, sizeof(myData));
   Serial.print("Bytes received: ");
   Serial.println(len);
 
-  Serial.println(data.button);
+  Serial.println(myData.button_press);
 }
 
-void setup() 
-{
+void setup() {
   Serial.begin(115200);
 
   WiFi.mode(WIFI_STA);
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
 
-  checkEspRes(esp_now_init(), "Error initializing ESP-NOW");
+  esp_now_register_recv_cb(OnDataRecv);
 
-  esp_now_register_recv_cb(onDataRecv);
-
-  Serial.println("Ready!!!");
+  Serial.println('Ready!!!');
 }
 
 void loop() {}

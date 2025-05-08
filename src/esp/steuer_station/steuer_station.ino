@@ -4,22 +4,24 @@
 
 #define BUTTON_PIN 21
 
-// Change this to the color of the button
-// that is attached to this esp
-#define BUTTON_TYPE GREEN_BUTTON;
+uint8_t broadcastAddress[] = {0x24, 0x62, 0xab, 0xf2, 0x17, 0x04};
+int currentState;
+int lastButtonState = HIGH;
 
-// MAC address of the receiver (the master device)
-uint8_t broadcastAddress[] = {0xb8, 0xd6, 0x1a, 0x5d, 0xfa, 0x54};
+typedef struct struct_message {
+  int button_press;
+} struct_message;
 
-void onDataSent(const uint8_t* macAddress, esp_now_send_status_t status) 
-{
+struct_message myData;
+
+esp_now_peer_info_t peerInfo;
+
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success"
-                                                : "Delivery Fail");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
-void setup() 
-{
+void setup() {
   Serial.begin(115200);
 
   pinMode(BUTTON_PIN, INPUT_PULLUP);
@@ -27,31 +29,34 @@ void setup()
 
   WiFi.mode(WIFI_STA);
 
-  checkEspRes(esp_now_init(), "Error initializing ESP-NOW");
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
 
-  esp_now_register_send_cb(onDataSent);
+  esp_now_register_send_cb(OnDataSent);
 
-  esp_now_peer_info_t peerInfo;
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  peerInfo.channel = 0;
+  peerInfo.channel = 0;  
   peerInfo.encrypt = false;
 
-  checkEspRes(esp_now_add_peer(&peerInfo), "Failed to add peer");
+  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+    Serial.println("Failed to add peer");
+    return;
+  }
 }
 
-void loop() 
-{
-  int state = digitalRead(BUTTON_PIN);
+void loop() {
+  currentState = digitalRead(BUTTON_PIN);
 
-  if (state == HIGH) 
-  {
-    SteuerStationMessage data;
-    data.button = BUTTON_TYPE;
+  if(lastButtonState == HIGH && currentState == LOW) {
+    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
 
-    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&data, sizeof(data));
     if (result == ESP_OK)
-      Serial.println("Sent with success");
+    Serial.println("Sent with success");
     else
-      checkEspRes(result, "Error sending the data");
+      Serial.println("Error sending the data");
   }
+
+   lastButtonState = currentState;
 }
