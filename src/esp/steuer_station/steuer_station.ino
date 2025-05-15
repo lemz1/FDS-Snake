@@ -10,16 +10,7 @@ uint8_t broadcastAddress[] = {0x24, 0x62, 0xab, 0xf2, 0x17, 0x04};
 
 int currentState;
 int lastState = HIGH;
-
-void onDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData,
-                int len) {
-  SteuerStationMessage data;
-  memcpy(&data, incomingData, sizeof(data));
-  Serial.print("Bytes received: ");
-  Serial.println(len);
-
-  Serial.println(data.button);
-}
+esp_now_peer_info_t peerInfo;
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("\r\nLast Packet Send Status:\t");
@@ -37,15 +28,11 @@ void setup() {
 
   checkEspRes(esp_now_init(), "Error initializing ESP-NOW");
 
-  esp_now_register_recv_cb(onDataRecv);
-
   esp_now_register_send_cb(onDataSent);
 
-  esp_now_peer_info_t peerInfo;
   memcpy(peerInfo.peer_addr, broadcastAddress, 6 * sizeof(uint8_t));
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
-
   checkEspRes(esp_now_add_peer(&peerInfo), "Failed to add peer");
 }
 
@@ -55,14 +42,7 @@ void loop() {
   if (lastState == HIGH && currentState == LOW) {
     SteuerStationMessage data;
     data.button = BUTTON_TYPE;
-
-    esp_err_t result =
-        esp_now_send(broadcastAddress, (uint8_t *)&data, sizeof(data));
-
-    if (result == ESP_OK)
-      Serial.println("Sent with success");
-    else
-      checkEspRes(result, "Error sending the data");
+    checkEspRes(esp_now_send(broadcastAddress, (uint8_t *)&data, sizeof(data)), "Error sending the data");
   }
 
   lastState = currentState;
