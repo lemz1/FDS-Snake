@@ -160,7 +160,7 @@ clock = pygame.time.Clock()
 apple_image = pygame.image.load(get_asset_path('assets/apple.png')).convert_alpha()
 apple_image_for_score = pygame.transform.scale(apple_image, (int(cell_size*0.8), int(cell_size*0.8)))
 try:
-    game_font = pygame.font.Font(get_asset_path('Font/playthings/Playthings.ttf'), int(cell_size*0.8))
+    game_font = pygame.font.Font(get_asset_path('Font/PoetsenOne-Regular.ttf'), int(cell_size*0.8))
 except pygame.error:
     game_font = pygame.font.SysFont("Arial", int(cell_size*0.8))
 main_game = MAIN()
