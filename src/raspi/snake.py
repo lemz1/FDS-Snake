@@ -1,4 +1,5 @@
 import sys
+
 import pygame
 from pygame.math import Vector2
 import sqlite3
@@ -8,6 +9,7 @@ from functions.fruit import FRUIT
 from functions.controls import read_button_input
 from functions.directions import draw_direction_buttons
 import functions.name as name_system
+from functions.database import in_top10
 
 pygame.init()
 
@@ -55,6 +57,7 @@ class MAIN:
         self.snake.draw_snake()
         self.draw_score()
         self.draw_highscore()
+
     def check_fruit_collision(self):
         if self.fruit.position == self.snake.body[0]:
             self.fruit.randomize()
@@ -84,23 +87,23 @@ class MAIN:
 
         pygame.draw.rect(screen, (167, 209, 61), bg, border_radius=5)
         screen.blit(surf, surf.get_rect(midright=(bg.right - 10, bg.centery)))
-        apple_width = int(cell_size * 1.5)  
-        apple_height = int(cell_size * 1.5) 
+        apple_width = int(cell_size * 1.5)
+        apple_height = int(cell_size * 1.5)
 
-        scaled_apple = pygame.transform.scale(apple_image_for_score, (apple_width, apple_height))
+        scaled_apple = pygame.transform.scale(
+            apple_image_for_score, (apple_width, apple_height)
+        )
 
         ar = scaled_apple.get_rect(
             midright=(bg.left + scaled_apple.get_width() + 10, bg.centery)
         )
         screen.blit(scaled_apple, ar)
-  
-
 
     def draw_highscore(self):
         x = cell_size * 1.5
         y = cell_size * 1.5
 
-        conn = sqlite3.connect('Leaderboard.db')
+        conn = sqlite3.connect("Leaderboard.db")
         cursor = conn.cursor()
         cursor.execute("SELECT MAX(Punkte) FROM Highscores")
         result = cursor.fetchone()
@@ -122,20 +125,22 @@ class MAIN:
         crown_width = int(cell_size * 1.5)
         crown_height = int(cell_size * 1.5)
 
-        scaled_crown = pygame.transform.scale(crown_image_for_score, (crown_width, crown_height))
+        scaled_crown = pygame.transform.scale(
+            crown_image_for_score, (crown_width, crown_height)
+        )
 
         ar = scaled_crown.get_rect(midright=(bg.right - 10, bg.centery))
         screen.blit(scaled_crown, ar)
-
-
-
 
     def game_over(self):
         global game_active
         game_active = False
         current_score_val = len(self.snake.body) - 3
-        name_system.initialize_state(current_score_val)
-        
+        if in_top10(current_score_val):
+            name_system.initialize_state(current_score_val)
+
+            # implement game over screen
+
 
 
 def reset_game():
@@ -302,6 +307,3 @@ while running:
     draw_direction_buttons(screen, screen_width, screen_height, cell_size)
     pygame.display.update()
     clock.tick(60)
-
-pygame.quit()
-sys.exit()
