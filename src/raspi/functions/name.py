@@ -1,8 +1,8 @@
 import pygame
-
+from .database import append_team
 
 NAME_INPUT_MODE = False
-ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 NAME_LENGTH = 5
 _player_name_chars_list = ["A"] * NAME_LENGTH
 _current_focus_index = 0
