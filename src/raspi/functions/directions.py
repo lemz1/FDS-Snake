@@ -20,7 +20,7 @@ def draw_direction_buttons(screen, screen_width, screen_height, cell_size):
         (255, 204, 0),    # Gelb
     ]
 
-    directions = ["LEFT", "UP", "DOWN", "RIGHT"]
+    directions = ["LEFT", "DOWN", "UP", "RIGHT"]
 
     for i in range(4):
         x = i * button_width + 5
