@@ -300,5 +300,6 @@ while running:
         screen.blit(isf, ir)
 
     draw_direction_buttons(screen, screen_width, screen_height, cell_size)
+    
     pygame.display.update()
     clock.tick(60)
