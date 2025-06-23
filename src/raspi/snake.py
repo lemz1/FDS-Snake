@@ -56,7 +56,6 @@ class MAIN:
         self.snake.draw_snake()
         self.draw_score()
         self.draw_highscore()
-
     def check_fruit_collision(self):
         if self.fruit.position == self.snake.body[0]:
             self.fruit.randomize()
