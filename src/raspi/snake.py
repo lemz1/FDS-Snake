@@ -31,6 +31,7 @@ crown_image_for_score = pygame.transform.scale(
 try:
     game_font = pygame.font.Font(
         get_asset_path("Font/PoetsenOne-Regular.ttf"), int(cell_size * 0.8)
+
     )
 except pygame.error:
     game_font = pygame.font.SysFont("Arial", int(cell_size * 0.8))
@@ -274,13 +275,13 @@ while running:
         main_game.draw_elements()
     else:
         screen.fill((0, 0, 0))
-
         try:
             go_t = pygame.font.Font(
-                get_asset_path("Font/playthings/Playthings.ttf"), int(cell_size * 3.0)
+                get_asset_path("Font/PoetsenOne-Regular.ttf"), int(cell_size * 3.0)
             )
             go_m = pygame.font.Font(
-                get_asset_path("Font/playthings/Playthings.ttf"), int(cell_size * 1.2)
+                get_asset_path("Font/PoetsenOne-Regular.ttf"), int(cell_size * 1.2)
+
             )
         except Exception as e:
             print(f"DEBUG: Could not load custom font. Error: {e}")
