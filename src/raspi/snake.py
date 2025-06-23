@@ -1,4 +1,3 @@
-import sys
 import pygame
 from pygame.math import Vector2
 import sqlite3
@@ -8,6 +7,7 @@ from functions.fruit import FRUIT
 from functions.controls import read_button_input
 from functions.directions import draw_direction_buttons
 import functions.name as name_system
+from functions.database import in_top10
 
 pygame.init()
 
@@ -84,23 +84,23 @@ class MAIN:
 
         pygame.draw.rect(screen, (167, 209, 61), bg, border_radius=5)
         screen.blit(surf, surf.get_rect(midright=(bg.right - 10, bg.centery)))
-        apple_width = int(cell_size * 1.5)  
-        apple_height = int(cell_size * 1.5) 
+        apple_width = int(cell_size * 1.5)
+        apple_height = int(cell_size * 1.5)
 
-        scaled_apple = pygame.transform.scale(apple_image_for_score, (apple_width, apple_height))
+        scaled_apple = pygame.transform.scale(
+            apple_image_for_score, (apple_width, apple_height)
+        )
 
         ar = scaled_apple.get_rect(
             midright=(bg.left + scaled_apple.get_width() + 10, bg.centery)
         )
         screen.blit(scaled_apple, ar)
-  
-
 
     def draw_highscore(self):
         x = cell_size * 1.5
         y = cell_size * 1.5
 
-        conn = sqlite3.connect('Leaderboard.db')
+        conn = sqlite3.connect("Leaderboard.db")
         cursor = conn.cursor()
         cursor.execute("SELECT MAX(Punkte) FROM Highscores")
         result = cursor.fetchone()
@@ -122,20 +122,19 @@ class MAIN:
         crown_width = int(cell_size * 1.5)
         crown_height = int(cell_size * 1.5)
 
-        scaled_crown = pygame.transform.scale(crown_image_for_score, (crown_width, crown_height))
+        scaled_crown = pygame.transform.scale(
+            crown_image_for_score, (crown_width, crown_height)
+        )
 
         ar = scaled_crown.get_rect(midright=(bg.right - 10, bg.centery))
         screen.blit(scaled_crown, ar)
-
-
-
 
     def game_over(self):
         global game_active
         game_active = False
         current_score_val = len(self.snake.body) - 3
-        name_system.initialize_state(current_score_val)
-        
+        if in_top10(current_score_val):
+            name_system.initialize_state(current_score_val)
 
 
 def reset_game():
@@ -160,7 +159,8 @@ main_game = MAIN()
 pygame.time.set_timer(SCREEN_UPDATE, current_speed)
 
 last_input_time = 0
-INPUT_DELAY = 150
+INPUT_DELAY = 20
+
 
 running = True
 while running:
@@ -169,9 +169,8 @@ while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-            break
-
+            pass
+            
         if (
             event.type == SCREEN_UPDATE
             and game_active
@@ -193,7 +192,7 @@ while running:
                             )
                             reset_game()
                         elif result == "ESC_PRESSED":
-                            reset_game()
+                            pass
             elif game_active:
                 if current_time_ms - last_input_time >= INPUT_DELAY:
                     d = main_game.snake.direction
@@ -211,7 +210,7 @@ while running:
                         main_game.snake.direction = Vector2(-1, 0)
                         action_taken_game = True
                     elif event.key == pygame.K_ESCAPE:
-                        running = False
+                        pass
                         action_taken_game = True
 
                     if action_taken_game:
@@ -219,16 +218,10 @@ while running:
                         processed_action_this_frame = True
             else:
                 if event.key == pygame.K_ESCAPE:
-                    running = False
+                    reset_game()
                 else:
                     if not name_system.NAME_INPUT_MODE:
-                        print(
-                            "Game Over - Key pressed to restart (not from name input)"
-                        )
                         reset_game()
-
-    if not running:
-        break
 
     if not processed_action_this_frame and (
         current_time_ms - last_input_time >= INPUT_DELAY
@@ -266,6 +259,9 @@ while running:
 
                 if action_taken_button:
                     last_input_time = current_time_ms
+            else:
+                if not name_system.NAME_INPUT_MODE:
+                    reset_game()
 
     screen.fill((175, 215, 70))
 
@@ -276,24 +272,27 @@ while running:
     elif game_active:
         main_game.draw_elements()
     else:
+        screen.fill((0, 0, 0))
+
         try:
             go_t = pygame.font.Font(
-                get_asset_path("Font/playthings/Playthings.ttf"), int(cell_size * 1.5)
+                get_asset_path("Font/playthings/Playthings.ttf"), int(cell_size * 3.0)
             )
             go_m = pygame.font.Font(
-                get_asset_path("Font/playthings/Playthings.ttf"), int(cell_size * 0.9)
+                get_asset_path("Font/playthings/Playthings.ttf"), int(cell_size * 1.2)
             )
-        except pygame.error:
-            go_t = pygame.font.SysFont("Arial", int(cell_size * 1.5))
-            go_m = pygame.font.SysFont("Arial", int(cell_size * 0.9))
+        except Exception as e:
+            print(f"DEBUG: Could not load custom font. Error: {e}")
+            go_t = pygame.font.SysFont("Arial", int(cell_size * 3.0))
+            go_m = pygame.font.SysFont("Arial", int(cell_size * 1.2))
 
         ts = go_t.render("Game Over!", True, (190, 0, 0))
-        isf_text = "Press any key or button to play again"
-        isf = go_m.render(isf_text, True, (56, 74, 12))
+        isf_text = "Drücke einen Knopf zum starten" 
+        isf = go_m.render(isf_text, True, (200, 200, 200)) 
 
-        tr = ts.get_rect(center=(screen_width / 2, screen_height / 2 - cell_size * 1.2))
+        tr = ts.get_rect(center=(screen_width / 2, screen_height / 2 - cell_size * 2.5))
         ir = isf.get_rect(
-            center=(screen_width / 2, screen_height / 2 + cell_size * 0.8)
+            center=(screen_width / 2, screen_height / 2 + cell_size * 1.5)
         )
 
         screen.blit(ts, tr)
@@ -303,6 +302,3 @@ while running:
     
     pygame.display.update()
     clock.tick(60)
-
-pygame.quit()
-sys.exit()
