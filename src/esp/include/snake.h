@@ -12,7 +12,7 @@ enum SteuerStationButton {
   BLUE_BUTTON = 3,
 
   // currently unsued, might be relevant in the future
-  WHITE_BUTTON = 4,
+  // WHITE_BUTTON = 4,
 };
 
 struct SteuerStationMessage {
@@ -30,5 +30,4 @@ struct SteuerStationMessage {
     Serial.print(res);                                                         \
     Serial.print(": ");                                                        \
     Serial.println(msg);                                                       \
-    assert(false); /* This will cause a crash */                               \
   }
