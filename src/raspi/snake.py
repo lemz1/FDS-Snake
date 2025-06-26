@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pygame
 from pygame.math import Vector2
 import sqlite3
