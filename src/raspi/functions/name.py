@@ -1,5 +1,5 @@
 import pygame
-from .database import append_team
+from .database import DataBase
 
 NAME_INPUT_MODE = False
 ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
@@ -13,7 +13,7 @@ OK_BUTTON_INDEX = NAME_LENGTH
 NUM_FOCUS_ITEMS = NAME_LENGTH + 1
 
 _last_input_time = 0
-INPUT_DELAY = 500
+INPUT_DELAY = 20
 
 
 def initialize_state(score_value):
@@ -49,6 +49,7 @@ def process_input(input_signal):
 
     _last_input_time = now
 
+    db = DataBase()
     action = None
     if isinstance(input_signal, int):
         if input_signal == pygame.K_UP:
@@ -89,13 +90,13 @@ def process_input(input_signal):
 
         elif _current_focus_index == OK_BUTTON_INDEX:
             final_entered_name = "".join(_player_name_chars_list)
-            append_team(final_entered_name, _current_score)
+            db.append_team(final_entered_name, _current_score)
             NAME_INPUT_MODE = False
             return "NAME_ENTERED"
 
     elif action == "CONFIRM_GLOBAL":
         final_entered_name = "".join(_player_name_chars_list)
-        append_team(final_entered_name, _current_score)
+        db.append_team(final_entered_name, _current_score)
         NAME_INPUT_MODE = False
         return "NAME_ENTERED"
 

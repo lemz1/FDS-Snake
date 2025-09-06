@@ -8,7 +8,7 @@ from functions.fruit import FRUIT
 from functions.controls import read_button_input
 from functions.directions import draw_direction_buttons
 import functions.name as name_system
-from functions.database import in_top10
+from functions.database import DataBase
 from fastapi import FastAPI
 
 
@@ -51,9 +51,10 @@ class MAIN:
     def __init__(self):
         self.snake = SNAKE(screen, cell_size)
         self.fruit = FRUIT(screen, cell_size, apple_image, cell_number_x, cell_number_y)
+        self.db = DataBase()
 
     def update(self):
-        self.snake.move_snake()
+        self.snake.move_snake(cell_number_x,cell_number_y)
         self.check_fruit_collision()
         self.check_fail_collision()
 
@@ -140,7 +141,7 @@ class MAIN:
         global game_active
         game_active = False
         current_score_val = len(self.snake.body) - 3
-        if in_top10(current_score_val):
+        if self.db.in_top10(current_score_val):
             name_system.initialize_state(current_score_val)
 
 
@@ -155,7 +156,7 @@ def reset_game():
 
 def update_speed():
     global current_speed, main_game
-    new_speed = max(30, 100 - (len(main_game.snake.body) - 3) * 5)
+    new_speed = max(30, 140 - (len(main_game.snake.body) - 3) * 5)
     if new_speed != current_speed:
         current_speed = new_speed
         pygame.time.set_timer(SCREEN_UPDATE, current_speed)
