@@ -4,9 +4,9 @@
 
 #define BUTTON_PIN 21
 
-#define BUTTON_TYPE GREEN_BUTTON
+#define BUTTON_TYPE YELLOW_BUTTON
 
-uint8_t broadcastAddress[] = {0x24, 0x62, 0xab, 0xf2, 0x17, 0x04};
+uint8_t broadcastAddress[] = {0xd8, 0xbc, 0x38, 0xfb, 0x09, 0x00};
 
 int currentState;
 int lastState = HIGH;
@@ -14,8 +14,7 @@ esp_now_peer_info_t peerInfo;
 
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success"
-                                                : "Delivery Fail");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
 void setup() {
