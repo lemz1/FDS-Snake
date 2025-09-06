@@ -9,10 +9,8 @@ from functions.controls import read_button_input
 from functions.directions import draw_direction_buttons
 import functions.name as name_system
 from functions.database import DataBase
-from fastapi import FastAPI
 
 
-app = FastAPI()
 
 
 pygame.init()
