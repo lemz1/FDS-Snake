@@ -9,10 +9,6 @@ from functions.controls import read_button_input
 from functions.directions import draw_direction_buttons
 import functions.name as name_system
 from functions.database import DataBase
-from fastapi import FastAPI
-
-
-app = FastAPI()
 
 
 pygame.init()
@@ -37,7 +33,6 @@ crown_image_for_score = pygame.transform.scale(
 try:
     game_font = pygame.font.Font(
         get_asset_path("Font/PoetsenOne-Regular.ttf"), int(cell_size * 0.8)
-
     )
 except pygame.error:
     game_font = pygame.font.SysFont("Arial", int(cell_size * 0.8))
@@ -54,7 +49,7 @@ class MAIN:
         self.db = DataBase()
 
     def update(self):
-        self.snake.move_snake(cell_number_x,cell_number_y)
+        self.snake.move_snake(cell_number_x, cell_number_y)
         self.check_fruit_collision()
         self.check_fail_collision()
 
@@ -63,6 +58,7 @@ class MAIN:
         self.snake.draw_snake()
         self.draw_score()
         self.draw_highscore()
+
     def check_fruit_collision(self):
         if self.fruit.position == self.snake.body[0]:
             self.fruit.randomize()
@@ -178,7 +174,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pass
-            
+
         if (
             event.type == SCREEN_UPDATE
             and game_active
@@ -287,7 +283,6 @@ while running:
             )
             go_m = pygame.font.Font(
                 get_asset_path("Font/PoetsenOne-Regular.ttf"), int(cell_size * 1.2)
-
             )
         except Exception as e:
             print(f"DEBUG: Could not load custom font. Error: {e}")
@@ -295,8 +290,8 @@ while running:
             go_m = pygame.font.SysFont("Arial", int(cell_size * 1.2))
 
         ts = go_t.render("Game Over!", True, (190, 0, 0))
-        isf_text = "Drücke einen Knopf zum starten" 
-        isf = go_m.render(isf_text, True, (200, 200, 200)) 
+        isf_text = "Drücke einen Knopf zum starten"
+        isf = go_m.render(isf_text, True, (200, 200, 200))
 
         tr = ts.get_rect(center=(screen_width / 2, screen_height / 2 - cell_size * 2.5))
         ir = isf.get_rect(
@@ -307,6 +302,6 @@ while running:
         screen.blit(isf, ir)
 
     draw_direction_buttons(screen, screen_width, screen_height, cell_size)
-    
+
     pygame.display.update()
     clock.tick(60)
