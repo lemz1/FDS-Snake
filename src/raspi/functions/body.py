@@ -91,7 +91,7 @@ class SNAKE:
         self.new_block = False
 
         pos_to_send = [[int(vec.x), int(vec.y)] for vec in self.body]
-        send_position_to_server(pos_to_send)
+        #send_position_to_server(pos_to_send)
 
 
 

@@ -37,7 +37,7 @@ try:
 except pygame.error:
     game_font = pygame.font.SysFont("Arial", int(cell_size * 0.8))
 
-current_speed = 100
+current_speed = 140
 SCREEN_UPDATE = pygame.USEREVENT
 game_active = True
 
@@ -152,7 +152,7 @@ def reset_game():
 
 def update_speed():
     global current_speed, main_game
-    new_speed = max(30, 140 - (len(main_game.snake.body) - 3) * 5)
+    new_speed = max(75, 140 - (len(main_game.snake.body) - 3) * 5)
     if new_speed != current_speed:
         current_speed = new_speed
         pygame.time.set_timer(SCREEN_UPDATE, current_speed)
