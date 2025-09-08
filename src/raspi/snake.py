@@ -167,6 +167,7 @@ INPUT_DELAY = 20
 
 
 running = True
+new_direction = main_game.snake.direction
 while running:
     current_time_ms = pygame.time.get_ticks()
     processed_action_this_frame = False
@@ -180,6 +181,7 @@ while running:
             and game_active
             and not name_system.NAME_INPUT_MODE
         ):
+            main_game.snake.direction = new_direction
             main_game.update()
 
         if event.type == pygame.KEYDOWN:
@@ -202,16 +204,16 @@ while running:
                     d = main_game.snake.direction
                     action_taken_game = False
                     if event.key == pygame.K_UP and d.y != 1:
-                        main_game.snake.direction = Vector2(0, -1)
+                        new_direction = Vector2(0, -1)
                         action_taken_game = True
                     elif event.key == pygame.K_RIGHT and d.x != -1:
-                        main_game.snake.direction = Vector2(1, 0)
+                        new_direction = Vector2(1, 0)
                         action_taken_game = True
                     elif event.key == pygame.K_DOWN and d.y != -1:
-                        main_game.snake.direction = Vector2(0, 1)
+                        new_direction = Vector2(0, 1)
                         action_taken_game = True
                     elif event.key == pygame.K_LEFT and d.x != 1:
-                        main_game.snake.direction = Vector2(-1, 0)
+                        new_direction = Vector2(-1, 0)
                         action_taken_game = True
                     elif event.key == pygame.K_ESCAPE:
                         pass
@@ -249,16 +251,16 @@ while running:
                 d = main_game.snake.direction
                 action_taken_button = False
                 if button_command == "UP" and d.y != 1:
-                    main_game.snake.direction = Vector2(0, -1)
+                    new_direction = Vector2(0, -1)
                     action_taken_button = True
                 elif button_command == "RIGHT" and d.x != -1:
-                    main_game.snake.direction = Vector2(1, 0)
+                    new_direction = Vector2(1, 0)
                     action_taken_button = True
                 elif button_command == "DOWN" and d.y != -1:
-                    main_game.snake.direction = Vector2(0, 1)
+                    new_direction = Vector2(0, 1)
                     action_taken_button = True
                 elif button_command == "LEFT" and d.x != 1:
-                    main_game.snake.direction = Vector2(-1, 0)
+                    new_direction = Vector2(-1, 0)
                     action_taken_button = True
 
                 if action_taken_button:
