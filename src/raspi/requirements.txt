@@ -1,0 +1,6 @@
+pygame
+pyserial
+websockets
+asyncio
+fastapi
+uvicorn
