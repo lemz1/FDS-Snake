@@ -17,7 +17,7 @@ info = pygame.display.Info()
 screen_width, screen_height = info.current_w, info.current_h
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
 
-cell_size = 30
+cell_size = 40
 cell_number_x = screen_width // cell_size
 cell_number_y = (screen_height - cell_size * 2) // cell_size
 
@@ -37,7 +37,7 @@ try:
 except pygame.error:
     game_font = pygame.font.SysFont("Arial", int(cell_size * 0.8))
 
-current_speed = 100
+current_speed = 140
 SCREEN_UPDATE = pygame.USEREVENT
 game_active = True
 
@@ -152,7 +152,7 @@ def reset_game():
 
 def update_speed():
     global current_speed, main_game
-    new_speed = max(30, 140 - (len(main_game.snake.body) - 3) * 5)
+    new_speed = max(75, 140 - (len(main_game.snake.body) - 3) * 5)
     if new_speed != current_speed:
         current_speed = new_speed
         pygame.time.set_timer(SCREEN_UPDATE, current_speed)
@@ -167,6 +167,7 @@ INPUT_DELAY = 20
 
 
 running = True
+new_direction = main_game.snake.direction
 while running:
     current_time_ms = pygame.time.get_ticks()
     processed_action_this_frame = False
@@ -180,6 +181,7 @@ while running:
             and game_active
             and not name_system.NAME_INPUT_MODE
         ):
+            main_game.snake.direction = new_direction
             main_game.update()
 
         if event.type == pygame.KEYDOWN:
@@ -202,16 +204,16 @@ while running:
                     d = main_game.snake.direction
                     action_taken_game = False
                     if event.key == pygame.K_UP and d.y != 1:
-                        main_game.snake.direction = Vector2(0, -1)
+                        new_direction = Vector2(0, -1)
                         action_taken_game = True
                     elif event.key == pygame.K_RIGHT and d.x != -1:
-                        main_game.snake.direction = Vector2(1, 0)
+                        new_direction = Vector2(1, 0)
                         action_taken_game = True
                     elif event.key == pygame.K_DOWN and d.y != -1:
-                        main_game.snake.direction = Vector2(0, 1)
+                        new_direction = Vector2(0, 1)
                         action_taken_game = True
                     elif event.key == pygame.K_LEFT and d.x != 1:
-                        main_game.snake.direction = Vector2(-1, 0)
+                        new_direction = Vector2(-1, 0)
                         action_taken_game = True
                     elif event.key == pygame.K_ESCAPE:
                         pass
@@ -249,16 +251,16 @@ while running:
                 d = main_game.snake.direction
                 action_taken_button = False
                 if button_command == "UP" and d.y != 1:
-                    main_game.snake.direction = Vector2(0, -1)
+                    new_direction = Vector2(0, -1)
                     action_taken_button = True
                 elif button_command == "RIGHT" and d.x != -1:
-                    main_game.snake.direction = Vector2(1, 0)
+                    new_direction = Vector2(1, 0)
                     action_taken_button = True
                 elif button_command == "DOWN" and d.y != -1:
-                    main_game.snake.direction = Vector2(0, 1)
+                    new_direction = Vector2(0, 1)
                     action_taken_button = True
                 elif button_command == "LEFT" and d.x != 1:
-                    main_game.snake.direction = Vector2(-1, 0)
+                    new_direction = Vector2(-1, 0)
                     action_taken_button = True
 
                 if action_taken_button:

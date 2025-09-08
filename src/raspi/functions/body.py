@@ -59,8 +59,8 @@ class SNAKE:
             elif i == len(self.body)-1:
                 self.screen.blit(self.tail, r)
             else:
-                prev = self.body[i+1] - b
-                nxt  = self.body[i-1] - b
+                prev = self.calculate_relative(b, self.body[i+1])
+                nxt  = self.calculate_relative(b, self.body[i-1])
                 if prev.x == nxt.x:
                     self.screen.blit(self.body_vertical, r)
                 elif prev.y == nxt.y:
@@ -91,7 +91,7 @@ class SNAKE:
         self.new_block = False
 
         pos_to_send = [[int(vec.x), int(vec.y)] for vec in self.body]
-        send_position_to_server(pos_to_send)
+        #send_position_to_server(pos_to_send)
 
 
 
@@ -99,26 +99,50 @@ class SNAKE:
         self.new_block = True
 
     def update_head_graphics(self):
-        rel = self.body[1] - self.body[0]
-        if rel == Vector2(1,0):  
+        rel = self.calculate_relative(self.body[0], self.body[1])
+
+        if rel == Vector2(1, 0):  
             self.head = self.head_left
-        elif rel == Vector2(-1,0): 
+        elif rel == Vector2(-1, 0): 
             self.head = self.head_right
-        elif rel == Vector2(0,1):
+        elif rel == Vector2(0, 1):
             self.head = self.head_up
+        elif rel == Vector2(0, -1):
+            self.head = self.head_down
         else:
             self.head = self.head_down
+            pass
 
     def update_tail_graphics(self):
-        rel = self.body[-2] - self.body[-1]
-        if rel == Vector2(1,0):  
+        rel = self.calculate_relative(self.body[-1], self.body[-2])
+
+        if rel == Vector2(1, 0):  
             self.tail = self.tail_left
-        elif rel == Vector2(-1,0): 
+        elif rel == Vector2(-1, 0): 
             self.tail = self.tail_right
-        elif rel == Vector2(0,1): 
+        elif rel == Vector2(0, 1): 
             self.tail = self.tail_up
+        elif rel == Vector2(0, -1):
+            self.tail = self.tail_down
         else:
             self.tail = self.tail_down
+            pass
+
+    def calculate_relative(self, vec1:Vector2, vec2:Vector2)->Vector2:
+        rel = vec2 - vec1
+
+        if rel.x > 1:
+            rel.x = -1
+        elif rel.x < - 1:
+            rel.x = 1
+
+        if rel.y > 1:
+            rel.y = -1
+        elif rel.y < -1:
+            rel.y = 1
+
+        return rel
+
 
     def get_body_as_json(self):
         positions = [(int(seg.x), int(seg.y)) for seg in self.body]
