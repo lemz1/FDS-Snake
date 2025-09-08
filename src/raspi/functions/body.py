@@ -1,9 +1,23 @@
 import pygame
 from pygame.math import Vector2
-
 from .get_asset_path import get_asset_path
-    
+import json
+import asyncio
+import websockets
 
+def send_position_to_server(pos):
+    async def send():
+        uri = "ws://localhost:8765"
+        try:
+            async with websockets.connect(uri) as websocket:
+                # Convert the list of tuples to a JSON string to send it
+                await websocket.send(json.dumps(pos))
+        except ConnectionRefusedError:
+            # This will happen if the server isn't running.
+            # We'll just ignore it so the game doesn't crash.
+            pass
+    # Run the async function
+    asyncio.run(send())
 class SNAKE:
     def __init__(self ,screen, cell_size):
         self.screen = screen 
@@ -11,7 +25,7 @@ class SNAKE:
         self.body = [Vector2(7,10), Vector2(6,10), Vector2(5,10)]
         self.direction = Vector2(1,0)
         self.new_block = False
-
+        
 
 
         self.head_up     = pygame.image.load(get_asset_path('assets/head_up.png')).convert_alpha()
@@ -60,13 +74,30 @@ class SNAKE:
                         self.screen.blit(self.body_tr, r)
                     else:
                         self.screen.blit(self.body_br, r)
-    def move_snake(self):
+
+
+    def move_snake(self, cell_num_x, cell_num_y):
         c = self.body[:] if self.new_block else self.body[:-1]
-        c.insert(0, c[0] + self.direction)
+    
+
+        temp_vector = c[0] + self.direction
+        temp_vector.x = temp_vector.x % cell_num_x
+        temp_vector.y = temp_vector.y % cell_num_y
+
+
+        c.insert(0, temp_vector)
+
         self.body = c
         self.new_block = False
+
+        pos_to_send = [[int(vec.x), int(vec.y)] for vec in self.body]
+        send_position_to_server(pos_to_send)
+
+
+
     def add_block(self):
         self.new_block = True
+
     def update_head_graphics(self):
         rel = self.body[1] - self.body[0]
         if rel == Vector2(1,0):  
@@ -77,6 +108,7 @@ class SNAKE:
             self.head = self.head_up
         else:
             self.head = self.head_down
+
     def update_tail_graphics(self):
         rel = self.body[-2] - self.body[-1]
         if rel == Vector2(1,0):  
@@ -87,3 +119,8 @@ class SNAKE:
             self.tail = self.tail_up
         else:
             self.tail = self.tail_down
+
+    def get_body_as_json(self):
+        positions = [(int(seg.x), int(seg.y)) for seg in self.body]
+        return json.dumps({"snake": positions})
+
