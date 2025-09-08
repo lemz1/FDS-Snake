@@ -100,25 +100,53 @@ class SNAKE:
 
     def update_head_graphics(self):
         rel = self.body[1] - self.body[0]
-        if rel == Vector2(1,0):  
+        
+        if rel.x > 1:
+            rel.x = -1
+        elif rel.x < - 1:
+            rel.x = 1
+        
+        if rel.y > 1:
+            rel.y = -1
+        elif rel.y < -1:
+            rel.y = 1
+
+        if rel == Vector2(1, 0):  
             self.head = self.head_left
-        elif rel == Vector2(-1,0): 
+        elif rel == Vector2(-1, 0): 
             self.head = self.head_right
-        elif rel == Vector2(0,1):
+        elif rel == Vector2(0, 1):
             self.head = self.head_up
+        elif rel == Vector2(0, -1):
+            self.head = self.head_down
         else:
             self.head = self.head_down
+            pass
 
     def update_tail_graphics(self):
         rel = self.body[-2] - self.body[-1]
-        if rel == Vector2(1,0):  
+
+        if rel.x > 1:
+            rel.x = -1
+        elif rel.x < - 1:
+            rel.x = 1
+        
+        if rel.y > 1:
+            rel.y = -1
+        elif rel.y < -1:
+            rel.y = 1
+
+        if rel == Vector2(1, 0):  
             self.tail = self.tail_left
-        elif rel == Vector2(-1,0): 
+        elif rel == Vector2(-1, 0): 
             self.tail = self.tail_right
-        elif rel == Vector2(0,1): 
+        elif rel == Vector2(0, 1): 
             self.tail = self.tail_up
+        elif rel == Vector2(0, -1):
+            self.tail = self.tail_down
         else:
             self.tail = self.tail_down
+            pass
 
     def get_body_as_json(self):
         positions = [(int(seg.x), int(seg.y)) for seg in self.body]
