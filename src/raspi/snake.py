@@ -17,7 +17,7 @@ info = pygame.display.Info()
 screen_width, screen_height = info.current_w, info.current_h
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
 
-cell_size = 30
+cell_size = 40
 cell_number_x = screen_width // cell_size
 cell_number_y = (screen_height - cell_size * 2) // cell_size
 
